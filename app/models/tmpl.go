@@ -13,7 +13,8 @@ type Tmpl struct {
 
 type Model interface {
 	Touch()
-	Save()
+	Update()
+	Create()
 	Delete()
 
 	// One and Many return the keys for this model that are used by Ember
@@ -24,7 +25,7 @@ type Model interface {
 	PostProcess()
 }
 
-func (t *Tmpl) Touch() {
+func (t Tmpl) Touch() {
 	createdAt := t.CreatedAt
 	if &createdAt == nil {
 		t.CreatedAt = time.Now()
@@ -32,14 +33,5 @@ func (t *Tmpl) Touch() {
 	t.UpdatedAt = time.Now()
 }
 
-func (t *Tmpl) PostProcess() {
+func (t Tmpl) PostProcess() {
 }
-
-//func (t *Tmpl) Save() {
-//	z := db.DB()
-//	t.Touch()
-//	z.Save(t)
-//}
-//
-//func (t *Tmpl) Delete() {
-//}

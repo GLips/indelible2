@@ -7,7 +7,7 @@ import (
 
 type Entry struct {
 	models.Tmpl
-	Content string
+	Content string `sql:"type:text;"`
 }
 
 func (e Entry) One() string {
@@ -18,11 +18,17 @@ func (e Entry) Many() string {
 	return "entries"
 }
 
-func (e *Entry) Save() {
+func (e Entry) CheckCreate() {
+}
+
+func (e Entry) Create() {
 	connection := db.New()
 	e.Touch()
-	connection.Save(e)
+	connection.Save(&e)
 }
 
 func (e Entry) Delete() {
+}
+
+func (e Entry) Update() {
 }

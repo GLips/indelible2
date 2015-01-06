@@ -10,8 +10,7 @@ type Entry struct {
 }
 
 func (c Entry) Create() revel.Result {
-	val := entry.Entry{}
-	c.GetJSONParam(val.One(), &val)
-	val.Save()
-	return c.RenderJson(map[string]interface{}{val.One(): val})
+	e := entry.Entry{}
+	c.GetJSONParam(e.One(), &e)
+	return c.basicCreate(e)
 }

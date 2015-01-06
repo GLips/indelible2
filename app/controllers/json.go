@@ -55,3 +55,27 @@ func (c *Controller) PreprocessJSON() revel.Result {
 	}
 	return nil
 }
+
+// RenderJSON calls the revel supplied RenderJson. It is supplied to allow for a
+// more consistent naming convention of JSON related methods.
+func (c *Controller) RenderJSON(i interface{}) revel.Result {
+	return c.RenderJson(i)
+}
+
+func (c *Controller) RenderJSONOk() revel.Result {
+	return c.RenderJSON("ok")
+}
+
+func (c *Controller) RenderJSONValidation() revel.Result {
+	if !c.Validation.HasErrors() {
+		return c.RenderJSONOk()
+	}
+
+	errors := make(map[string][]string)
+	for _, message := range c.Validation.ErrorMap() {
+		errors[message.Key] = []string{message.Message}
+	}
+
+	c.Response.Status = 422
+	return c.RenderJSON(map[string]map[string][]string{"errors": errors})
+}
