@@ -21,10 +21,9 @@ func (e Entry) Many() string {
 func (e Entry) CheckCreate() {
 }
 
-func (e Entry) Create() {
+func (e *Entry) Create() {
 	connection := db.New()
-	e.Touch()
-	connection.Save(&e)
+	connection.Save(e)
 }
 
 func (e Entry) Delete() {

@@ -10,7 +10,7 @@ type Entry struct {
 }
 
 func (c Entry) Create() revel.Result {
-	e := entry.Entry{}
-	c.GetJSONParam(e.One(), &e)
+	e := &entry.Entry{}
+	c.GetJSONParam(e.One(), e)
 	return c.basicCreate(e)
 }

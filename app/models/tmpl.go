@@ -12,7 +12,6 @@ type Tmpl struct {
 }
 
 type Model interface {
-	Touch()
 	Update()
 	Create()
 	Delete()
@@ -23,14 +22,6 @@ type Model interface {
 	Many() string
 
 	PostProcess()
-}
-
-func (t Tmpl) Touch() {
-	createdAt := t.CreatedAt
-	if &createdAt == nil {
-		t.CreatedAt = time.Now()
-	}
-	t.UpdatedAt = time.Now()
 }
 
 func (t Tmpl) PostProcess() {
