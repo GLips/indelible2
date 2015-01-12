@@ -48,9 +48,6 @@ func (u *User) Validate(v *revel.Validation) {
 	v.Required(u.Username).
 		Key("Username").
 		Message("We need a username to create your account.")
-	v.MinSize(u.Username, 3).
-		Key("Username").
-		Message("A username should be at least 3 characters long.")
 	v.MaxSize(u.Username, 32).
 		Key("Username").
 		Message("A username should be less than 32 characters long.")
@@ -61,13 +58,13 @@ func (u *User) Validate(v *revel.Validation) {
 func (u *User) validatePassword(v *revel.Validation) {
 	v.Required(u.Password).
 		Key("Password").
-		Message("A password must be supplied.")
-	v.MinSize(u.Password, 8).
+		Message("We need a password to make your account!")
+	v.MinSize(u.Password, 6).
 		Key("Password").
-		Message("Passwords must be at least 8 characters.")
-	//v.Check(u.Password, models.EqualTo{u.PasswordConfirm}).
-	//	Key("PasswordConfirm").
-	//	Message("Passwords do not match.")
+		Message("Passwords should be at least 6 characters.")
+	v.Check(u.Password, models.EqualTo{u.PasswordConfirm}).
+		Key("PasswordConfirm").
+		Message("Passwords do not match.")
 
 	// If there are no errors, generate a new password hash.
 	if !v.HasErrors() {
