@@ -79,3 +79,45 @@ func (u *User) validatePassword(v *revel.Validation) {
 	u.Password = ""
 	u.PasswordConfirm = ""
 }
+
+func (u User) Login(v *revel.Validation) (User, bool) {
+	badId := false
+	connection := db.New()
+	connection.Where("UPPER(username) = UPPER(?)", u.Username).First(&u)
+	if u.Id == 0 {
+		badId = true
+	}
+
+	// Check if the given credentials are sufficient for authentication.
+	u.ValidateLogin(v, u)
+	if v.HasErrors() {
+		// If it didn't work for the user name, try again for the email address.
+		v.Clear()
+
+		connection.Where("UPPER(email) = UPPER(?)", u.Username).First(&u)
+		if u.Id == 0 && badId {
+			v.Check(u.Id, models.EqualTo{1}).
+				Key("Username").
+				Message("Username or email not found. Are you sure you entered your ID correctly?")
+			return u, true
+		}
+
+		u.ValidateLogin(v, u)
+		if v.HasErrors() {
+			u = User{}
+			return u, true
+		}
+	}
+
+	// Associate the current session with the given user name.
+	//c.Persist.Info[userSessionKey] = u.Username
+
+	return u, false
+}
+
+func (u User) ValidateLogin(v *revel.Validation, user User) {
+	err := bcrypt.CompareHashAndPassword([]byte(u.PasswordHash), []byte(user.Password))
+	v.Check(err, models.EqualTo{nil}).
+		Key("Password").
+		Message("Try entering that password again.")
+}

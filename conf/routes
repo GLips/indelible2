@@ -16,6 +16,7 @@ GET     /public/*filepath                       Static.Serve("public")
 POST    /api/1/entries                          Entry.Create
 
 POST    /api/1/users                            User.Create
+POST    /api/1/user/logins                      User.Login
 
 # Catch all
 *       /:controller/:action                    :controller.:action
