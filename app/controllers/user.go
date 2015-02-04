@@ -26,10 +26,10 @@ func (c User) Login() revel.Result {
 	if err {
 		return c.RenderJSONValidation()
 	} else {
-		// TODO: Strip the user's password before sending it back.
 		// TODO: Add a persistent feature to track logged in users.
-		// TODO: Profide a user JSON for logged in users to
+		// TODO: Provide a user JSON for logged in users to
 		//       bootstrap Ember on initial page load.
+		user.Strip()
 		return c.RenderJSON(map[string]interface{}{user.One(): user})
 	}
 }

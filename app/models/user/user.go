@@ -41,6 +41,12 @@ func (u User) Update() {
 func (u User) Delete() {
 }
 
+func (u *User) Strip() {
+	u.Password = ""
+	u.PasswordHash = ""
+	u.PasswordConfirm = ""
+}
+
 func (u *User) Validate(v *revel.Validation) {
 	u.PasswordHash = ""
 
