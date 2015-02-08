@@ -1,6 +1,8 @@
 package user
 
 import (
+	"fmt"
+
 	"github.com/GLips/Indelible2/app/db"
 	"github.com/GLips/Indelible2/app/models"
 
@@ -47,6 +49,21 @@ func (u *User) Strip() {
 	u.PasswordConfirm = ""
 }
 
+func FindByField(fieldName string, value string) User {
+	var u User
+	connection := db.New()
+	// It appears our ORM doesn't support double variable concatenation
+	query := fmt.Sprintf("UPPER(%v) = UPPER(?)", fieldName)
+	connection.Where(query, value).First(&u)
+	return u
+}
+func FindByUsername(username string) User {
+	return FindByField("username", username)
+}
+func FindByEmail(email string) User {
+	return FindByField("email", email)
+}
+
 func (u *User) Validate(v *revel.Validation) {
 	u.PasswordHash = ""
 
@@ -77,53 +94,32 @@ func (u *User) validatePassword(v *revel.Validation) {
 		p := []byte(u.Password)
 		pwHash, _ := bcrypt.GenerateFromPassword(p, bcrypt.DefaultCost)
 		u.PasswordHash = string(pwHash)
-		//v.Check(err, models.EqualTo{nil}).
-		//	Key(app.FlashErrorKey).
-		//	Message("An error occurred, please try again.")
 	}
-
-	u.Password = ""
-	u.PasswordConfirm = ""
 }
 
 func (u User) Login(v *revel.Validation) (User, bool) {
-	badId := false
-	connection := db.New()
-	connection.Where("UPPER(username) = UPPER(?)", u.Username).First(&u)
-	if u.Id == 0 {
-		badId = true
-	}
+	username := u.Username
 
-	// Check if the given credentials are sufficient for authentication.
-	u.ValidateLogin(v, u)
+	dbUser := FindByUsername(username)
+	dbUser.ValidateLogin(v, u)
 	if v.HasErrors() {
 		// If it didn't work for the user name, try again for the email address.
 		v.Clear()
 
-		connection.Where("UPPER(email) = UPPER(?)", u.Username).First(&u)
-		if u.Id == 0 && badId {
-			v.Check(u.Id, models.EqualTo{1}).
-				Key("Username").
-				Message("Username or email not found. Are you sure you entered your ID correctly?")
-			return u, true
-		}
-
-		u.ValidateLogin(v, u)
+		dbUser = FindByEmail(username)
+		dbUser.ValidateLogin(v, u)
 		if v.HasErrors() {
 			u = User{}
 			return u, true
 		}
 	}
 
-	// Associate the current session with the given user name.
-	//c.Persist.Info[userSessionKey] = u.Username
-
-	return u, false
+	return dbUser, false
 }
 
 func (u User) ValidateLogin(v *revel.Validation, user User) {
 	err := bcrypt.CompareHashAndPassword([]byte(u.PasswordHash), []byte(user.Password))
 	v.Check(err, models.EqualTo{nil}).
-		Key("Password").
-		Message("Try entering that password again.")
+		Key("Username").
+		Message("Username or password is invalid.")
 }
