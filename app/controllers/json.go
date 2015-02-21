@@ -6,11 +6,15 @@ import (
 	"io/ioutil"
 	"strings"
 
+	"github.com/GLips/Indelible2/app"
 	"github.com/GLips/Indelible2/app/models"
 
 	"github.com/revel/revel"
 )
 
+// GetJSONParam retrieves a JSON encoded parameter from a request body. The
+// convention is that at the top level the request body contains a dictionary of
+// values. This top level is extracted into structs—often models.
 func (c *Controller) GetJSONParam(name string, value interface{}) bool {
 	err := json.Unmarshal([]byte(c.JSONParams[name]), &value)
 	model, ok := value.(models.Model)
@@ -22,6 +26,9 @@ func (c *Controller) GetJSONParam(name string, value interface{}) bool {
 	return err == nil
 }
 
+// PreprocessJSON is a filter that will pre-process the bodies all of JSON
+// requests by extracting all of the top level key values into the JSONParams
+// field of Controller.
 func (c *Controller) PreprocessJSON() revel.Result {
 	c.JSONParams = make(map[string]string)
 	t := c.Request.Header.Get("Content-Type")
@@ -66,6 +73,8 @@ func (c *Controller) RenderJSONOk() revel.Result {
 	return c.RenderJSON("ok")
 }
 
+// RenderJSONValidation provides a canonical way of returning an error message
+// based on a validation error map.
 func (c *Controller) RenderJSONValidation() revel.Result {
 	if !c.Validation.HasErrors() {
 		return c.RenderJSONOk()
@@ -76,6 +85,16 @@ func (c *Controller) RenderJSONValidation() revel.Result {
 		errors[message.Key] = []string{message.Message}
 	}
 
-	c.Response.Status = 422
+	c.Response.Status = app.StatusUnprocessableError
 	return c.RenderJSON(map[string]map[string][]string{"errors": errors})
+}
+
+// RenderJSONError provides a canonical way of returning an error message.
+func (c *Controller) RenderJSONError(message string) revel.Result {
+	c.Response.Status = app.StatusUnprocessableError
+	return c.RenderJSON(map[string]map[string][]string{
+		"errors": {
+			app.FlashErrorKey: {message},
+		},
+	})
 }

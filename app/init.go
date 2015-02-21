@@ -2,6 +2,11 @@ package app
 
 import "github.com/revel/revel"
 
+const (
+	FlashErrorKey            = "flash"
+	StatusUnprocessableError = 422
+)
+
 func init() {
 	// Filters is the default set of global filters.
 	revel.Filters = []revel.Filter{
