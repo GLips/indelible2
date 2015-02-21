@@ -17,6 +17,7 @@ POST    /api/1/entries                          Entry.Create
 
 POST    /api/1/users                            User.Create
 POST    /api/1/user/logins                      User.Login
+PUT     /api/1/user/logouts/:id                 User.Logout
 
 # Catch all
 *       /:controller/:action                    :controller.:action

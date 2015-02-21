@@ -40,6 +40,14 @@ func (c User) Login() revel.Result {
 		return c.RenderJSON(map[string]interface{}{user.One(): user})
 	}
 }
+func (c User) Logout(id int) revel.Result {
+	c.Session[userSessionKey] = ""
+	var u user.User
+	// We pass back a user with the same ID as before because Ember requires
+	// it on all `save()` requests, which is what we use to logout.
+	u.Id = c.ActiveUser().Id
+	return c.RenderJSON(map[string]interface{}{u.One(): u})
+}
 
 // CheckedLoggedIn is an interceptor that will determine if the current request
 // is from a logged in user or not. It will populate the LogeedIn and Username
