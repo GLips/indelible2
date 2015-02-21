@@ -34,8 +34,6 @@ func (c User) Login() revel.Result {
 		// Associate the current session with the given user name.
 		c.Session[userSessionKey] = user.Username
 
-		// TODO: Provide a user JSON for logged in users to
-		//       bootstrap Ember on initial page load.
 		user.Strip()
 		return c.RenderJSON(map[string]interface{}{user.One(): user})
 	}

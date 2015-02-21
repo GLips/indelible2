@@ -13,6 +13,7 @@ GET     /favicon.ico                            404
 GET     /public/*filepath                       Static.Serve("public")
 
 # 
+GET     /api/1/entries                          Entry.Index
 POST    /api/1/entries                          Entry.Create
 
 POST    /api/1/users                            User.Create
