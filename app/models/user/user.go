@@ -16,9 +16,9 @@ type User struct {
 	Identifier      string `sql:"size:128"`
 	Email           string
 	Username        string `sql:"size:32"`
-	Password        string `sql:"-"`
-	PasswordConfirm string `sql:"-"`
-	PasswordHash    string `sql:"size:128"`
+	Password        string `sql:"-" json:",omitempty"`
+	PasswordConfirm string `sql:"-" json:",omitempty"`
+	PasswordHash    string `sql:"size:128" json:",omitempty"`
 }
 
 func (u User) One() string {
