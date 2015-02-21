@@ -1,12 +1,17 @@
 package controllers
 
 import (
+	"sync"
+
 	"github.com/GLips/Indelible2/app/db"
+	"github.com/GLips/Indelible2/app/models/entry"
 	"github.com/GLips/Indelible2/app/models/user"
 
 	"github.com/jinzhu/gorm"
 	"github.com/revel/revel"
 )
+
+var once sync.Once
 
 type Controller struct {
 	*revel.Controller
@@ -39,6 +44,7 @@ func (c *Controller) ActiveUser() user.User {
 
 func init() {
 	revel.InterceptMethod((*Controller).DBBegin, revel.BEFORE)
+	revel.InterceptMethod((*Controller).DBMigrate, revel.BEFORE)
 	revel.InterceptMethod((*Controller).PreprocessJSON, revel.BEFORE)
 	// Grab the current user's info from the session so it's accessible
 	// to the controller.
@@ -50,5 +56,14 @@ func init() {
 
 func (c *Controller) DBBegin() revel.Result {
 	c.DBSess = db.New()
+	return nil
+}
+
+func (c *Controller) DBMigrate() revel.Result {
+	once.Do(func() {
+		connection := db.New()
+		connection.AutoMigrate(&user.User{})
+		connection.AutoMigrate(&entry.Entry{})
+	})
 	return nil
 }
