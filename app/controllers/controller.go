@@ -1,16 +1,12 @@
 package controllers
 
 import (
-	"sync"
-
 	"github.com/GLips/Indelible2/app/db"
 	"github.com/GLips/Indelible2/app/models/user"
 
 	"github.com/jinzhu/gorm"
 	"github.com/revel/revel"
 )
-
-var once sync.Once
 
 type Controller struct {
 	*revel.Controller
@@ -34,11 +30,9 @@ func (c *Controller) ActiveUsername() string {
 }
 
 func (c *Controller) ActiveUser() user.User {
-	if c.IsLoggedIn() {
+	if c.IsLoggedIn() && c.CurrentUser.Id == 0 {
 		// Only hit the DB to try to find the currently logged in user once.
-		once.Do(func() {
-			c.CurrentUser = user.FindByUsername(c.ActiveUsername())
-		})
+		c.CurrentUser = user.FindByUsername(c.ActiveUsername())
 	}
 	return c.CurrentUser
 }

@@ -52,7 +52,8 @@ func (u *User) Strip() {
 func FindByField(fieldName string, value string) User {
 	var u User
 	connection := db.New()
-	// It appears our ORM doesn't support double variable concatenation
+	// It appears our ORM doesn't support double variable concatenation,
+	// so we have to build the request up in two methods.
 	query := fmt.Sprintf("UPPER(%v) = UPPER(?)", fieldName)
 	connection.Where(query, value).First(&u)
 	return u
