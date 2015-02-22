@@ -12,7 +12,12 @@ type Entry struct {
 
 func (c Entry) Index() revel.Result {
 	if c.IsLoggedIn() {
-		var entries []entry.Entry
+		// TODO: Abstract this out into a basicQuery function
+		// TODO: Hook up an ESP
+		// TODO: Send emails to welcome users after registering
+		// We initialize entries like this so RenderJSON renders a
+		// blank array as [] instead of null.
+		entries := make([]entry.Entry, 0)
 		var e entry.Entry
 		currentUser := c.ActiveUser()
 		connection := db.New()
