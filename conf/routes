@@ -14,6 +14,7 @@ GET     /public/*filepath                       Static.Serve("public")
 
 # 
 GET     /api/1/entries                          Entry.Index
+GET     /api/1/entries/:id                      Entry.Get
 POST    /api/1/entries                          Entry.Create
 
 POST    /api/1/users                            User.Create
