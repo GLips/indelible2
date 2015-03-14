@@ -13,7 +13,6 @@ import (
 
 type User struct {
 	models.Tmpl
-	Identifier      string `sql:"size:128"`
 	Email           string
 	Username        string `sql:"size:32"`
 	Password        string `sql:"-" json:",omitempty"`

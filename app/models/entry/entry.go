@@ -7,8 +7,9 @@ import (
 
 type Entry struct {
 	models.Tmpl
-	Content string `sql:"type:text;"`
-	UserId  int64
+	Content        string `sql:"type:text;"`
+	UserId         int64
+	SecondsToWrite int
 }
 
 func (e Entry) One() string {
